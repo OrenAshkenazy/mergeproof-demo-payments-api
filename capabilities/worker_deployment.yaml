@@ -5,8 +5,10 @@ inputs:
 generates:
   - worker_deployment
   - helm_worker_values
+  - terraform_worker
 checks:
   - helm_template
+  - terraform_validate
   - policy
   - naming_convention
 approval:
@@ -20,3 +22,6 @@ template_map:
   helm_worker_values:
     template: templates/helm_worker_values.tmpl
     output: helm/payments-api/workers/${worker_name}.yaml
+  terraform_worker:
+    template: templates/terraform_worker.tmpl
+    output: terraform/payments-api/workers/${worker_name}.tf

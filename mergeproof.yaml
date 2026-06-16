@@ -6,6 +6,7 @@ architecture_sources:
     allow:
       - envs/prod/payments-api/**
       - helm/payments-api/**
+      - terraform/payments-api/**
 capabilities:
   - type: worker_deployment
     template: capabilities/worker_deployment.yaml
