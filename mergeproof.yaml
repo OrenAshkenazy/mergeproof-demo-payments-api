@@ -1,0 +1,18 @@
+version: 1
+service: payments-api
+architecture_sources:
+  - repo: OrenAshkenazy/mergeproof-demo-platform-infra
+    ref: main
+    allow:
+      - envs/prod/payments-api/**
+      - helm/payments-api/**
+capabilities:
+  - type: worker_deployment
+    template: capabilities/worker_deployment.yaml
+    approver: "@platform-runtime"
+  - type: secret_wiring
+    template: capabilities/secret_wiring.yaml
+    approver: "@platform-secrets"
+limits:
+  max_files: 200
+  max_file_bytes: 262144
