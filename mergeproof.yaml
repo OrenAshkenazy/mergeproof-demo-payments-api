@@ -1,5 +1,8 @@
 version: 1
+
 service: payments-api
+
+# Production environment: prod
 architecture_sources:
   - repo: OrenAshkenazy/mergeproof-demo-platform-infra
     ref: main
@@ -7,6 +10,7 @@ architecture_sources:
       - envs/prod/payments-api/**
       - helm/payments-api/**
       - terraform/payments-api/**
+
 capabilities:
   - type: worker_deployment
     template: capabilities/worker_deployment.yaml
