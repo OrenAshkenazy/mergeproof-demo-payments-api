@@ -10,10 +10,10 @@ architecture_sources:
 capabilities:
   - type: worker_deployment
     template: capabilities/worker_deployment.yaml
-    approver: "@platform-runtime"
+    approver: "@platform-team"
   - type: secret_wiring
     template: capabilities/secret_wiring.yaml
-    approver: "@platform-secrets"
+    approver: "@platform-team"
 limits:
   max_files: 200
-  max_file_bytes: 262144
+# max_file_bytes: 262144
