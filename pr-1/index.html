@@ -129,11 +129,11 @@ pre.diff { background: #0a1322; border: 1px solid #1a2740; border-radius: 8px; p
 
   <h2 class="section">Production architecture context</h2>
   <div class="arch">
-    <div class="flow"><span class="node service" title="observed">payments-api</span><span class="arrow">→</span><span class="node" title="observed">Worker</span></div>
+    <div class="flow"><span class="node exposure" title="observed">Public edge</span><span class="arrow">→</span><span class="node exposure" title="observed">ALB</span><span class="arrow">→</span><span class="node" title="observed">Ingress controller</span><span class="arrow">→</span><span class="node" title="observed">Kong API Gateway</span><span class="arrow">→</span><span class="node service" title="observed">Payment API</span><span class="arrow">→</span><span class="node" title="observed">Payment refund worker</span><span class="arrow">→</span><span class="node" title="observed">External payment service</span></div>
     
     <div class="flow sub">Owner: unknown ·
       Runtime: Kubernetes</div>
-    <div class="context-grid"><div class="context-panel"><div class="label">Production context pack</div><div class="main">9 files from <code>OrenAshkenazy/mergeproof-demo-platform-infra@16cfd15</code></div><div class="meta">Fetched at 2026-06-17T06:51:29Z</div></div><div class="context-panel"><div class="label">Evidence paths</div><div class="main">envs/prod/payments-api/README.md, envs/prod/payments-api/secrets/README.md, envs/prod/payments-api/service.yaml, helm/payments-api/README...</div></div></div>
+    <div class="context-grid"><div class="context-panel"><div class="label">Production context pack</div><div class="main">15 files from <code>OrenAshkenazy/mergeproof-demo-platform-infra@0739978</code></div><div class="meta">Fetched at 2026-06-17T07:00:27Z</div></div><div class="context-panel"><div class="label">Evidence paths</div><div class="main">envs/prod/payments-api/README.md, envs/prod/payments-api/egress/payment-provider.yaml, envs/prod/payments-api/ingress.yaml, envs/prod/pay...</div></div></div>
   </div>
 
   <h2 class="section">Pack safety</h2><div class="safety"><div class="safety-row"><strong>Safety</strong><span>No config, fetch, or source warnings recorded.</span></div></div>
@@ -152,8 +152,64 @@ pre.diff { background: #0a1322; border: 1px solid #1a2740; border-radius: 8px; p
   </div>
 
   </section>
-  <section class="tabpanel" id="tab-flow"><h2 class="section">Production flow</h2><div class="arch"><div class="flow"><span class="node service" title="observed">payments-api</span><span class="arrow">→</span><span class="node" title="observed">Worker</span></div></div><h2 class="section">Production evidence</h2><div class="safety"><div class="safety-row"><strong>payments-api</strong><span>service · observed · helm/payments-api/values.yaml</span></div><div class="safety-row"><strong>Worker</strong><span>worker · observed · envs/prod/payments-api/README.md, helm/payments-api/README.md, terraform/payments-api/workers/README.md</span></div></div><h2 class="section">Obligations on this change</h2><div class="obl-grid"><div class="obl-node"><span class="node service">worker_deployment</span><div class="obl-meta">payments-api · matched · @platform-team</div></div></div></section>
-  <section class="tabpanel" id="tab-resolve"><h2 class="section">Resolve</h2><div class="resolve-card"><div class="resolve-head">worker_deployment — matched · approver @platform-team</div><div class="points">Proof — checks: helm_template, terraform_validate, policy, naming_convention</div><div class="points">No approved capability — escalate to platform.</div></div></section>
+  <section class="tabpanel" id="tab-flow"><h2 class="section">Production flow</h2><div class="arch"><div class="flow"><span class="node exposure" title="observed">Public edge</span><span class="arrow">→</span><span class="node exposure" title="observed">ALB</span><span class="arrow">→</span><span class="node" title="observed">Ingress controller</span><span class="arrow">→</span><span class="node" title="observed">Kong API Gateway</span><span class="arrow">→</span><span class="node service" title="observed">Payment API</span><span class="arrow">→</span><span class="node" title="observed">Payment refund worker</span><span class="arrow">→</span><span class="node" title="observed">External payment service</span></div></div><h2 class="section">Production evidence</h2><div class="safety"><div class="safety-row"><strong>Public edge</strong><span>external_entrypoint · observed · envs/prod/payments-api/ingress.yaml, helm/payments-api/ingress-controller.yaml</span></div><div class="safety-row"><strong>ALB</strong><span>load_balancer · observed · envs/prod/payments-api/ingress.yaml, terraform/payments-api/alb.tf</span></div><div class="safety-row"><strong>Ingress controller</strong><span>ingress · observed · envs/prod/payments-api/ingress.yaml, envs/prod/payments-api/kong-route.yaml, helm/payments-api/ingress-controller.yaml</span></div><div class="safety-row"><strong>Kong API Gateway</strong><span>gateway · observed · envs/prod/payments-api/kong-route.yaml, helm/payments-api/ingress-controller.yaml</span></div><div class="safety-row"><strong>Payment API</strong><span>service · observed · envs/prod/payments-api/service.yaml, helm/payments-api/values.yaml</span></div><div class="safety-row"><strong>Payment refund worker</strong><span>worker · observed · envs/prod/payments-api/workers/refund-worker.yaml, terraform/payments-api/workers/README.md</span></div><div class="safety-row"><strong>External payment service</strong><span>external_dependency · observed · envs/prod/payments-api/egress/payment-provider.yaml</span></div></div><h2 class="section">Obligations on this change</h2><div class="obl-grid"><div class="obl-node"><span class="node service">worker_deployment</span><div class="obl-meta">payments-api · matched · @platform-team</div></div></div></section>
+  <section class="tabpanel" id="tab-resolve"><h2 class="section">Resolve</h2><div class="resolve-card"><div class="resolve-head">worker_deployment — matched · approver @platform-team</div><div class="points">Proof — checks: helm_template, terraform_validate, policy, naming_convention</div><div class="diff-path">envs/prod/payments-api/workers/refund_worker-deployment.yaml</div><pre class="diff">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments-api-refund_worker
+  labels:
+    app: payments-api
+    component: refund_worker
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: refund_worker
+          image: payments-api:latest
+          command: [&quot;python&quot;, &quot;-m&quot;, &quot;app.workers.refund_worker&quot;]
+</pre><div class="diff-path">helm/payments-api/workers/refund_worker.yaml</div><pre class="diff">workers:
+  refund_worker:
+    enabled: true
+    service: payments-api
+</pre><div class="diff-path">terraform/payments-api/workers/refund_worker.tf</div><pre class="diff">resource &quot;kubernetes_deployment&quot; &quot;refund_worker&quot; {
+  metadata {
+    name = &quot;payments-api-refund_worker&quot;
+    labels = {
+      app       = &quot;payments-api&quot;
+      component = &quot;refund_worker&quot;
+    }
+  }
+
+  spec {
+    replicas = 1
+
+    selector {
+      match_labels = {
+        app       = &quot;payments-api&quot;
+        component = &quot;refund_worker&quot;
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          app       = &quot;payments-api&quot;
+          component = &quot;refund_worker&quot;
+        }
+      }
+
+      spec {
+        container {
+          name    = &quot;refund_worker&quot;
+          image   = &quot;payments-api:latest&quot;
+          command = [&quot;python&quot;, &quot;-m&quot;, &quot;app.workers.refund_worker&quot;]
+        }
+      }
+    }
+  }
+}
+</pre><a class="btn" href="https://github.com/OrenAshkenazy/mergeproof-demo-platform-infra/pull/1">Review infra PR ▸</a><div class="points">Branch <code>mergeproof/worker_deployment-refund_worker</code> (created)</div></div></section>
   <section class="tabpanel" id="tab-audit"><h2 class="section">Audit trail</h2><ol class="audit"><li>AI loop: 5 fixed · verification passed</li><li>Obligation <code>worker_deployment</code> (matched) from app/workers/refund_worker.py</li></ol></section>
   <section class="tabpanel" id="tab-packs"><h2 class="section">Capability packs</h2><table><thead><tr><th>Type</th><th>Generates</th><th>Checks</th><th>Approver</th><th>Human gate</th></tr></thead><tbody><tr><td><code>worker_deployment</code></td><td>worker_deployment, helm_worker_values, terraform_worker</td><td>helm_template, terraform_validate, policy, naming_convention</td><td>@platform-team</td><td>—</td></tr></tbody></table></section>
 
