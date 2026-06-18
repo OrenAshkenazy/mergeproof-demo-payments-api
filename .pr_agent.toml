@@ -1,0 +1,40 @@
+[github_app]
+pr_commands = [
+  "/agentic_describe",
+  "/agentic_review"
+]
+
+[review_agent]
+comments_location_policy = "both"
+inline_comments_severity_threshold = 2
+
+issues_user_guidelines = """
+Focus on production-readiness gaps introduced by this PR.
+
+Check whether the PR introduces:
+- new workers, consumers, jobs, or async processing
+- new API routes or externally reachable endpoints
+- new secrets, env vars, credentials, or provider integrations
+- new queues, topics, streams, or event producers/consumers
+- new cloud permissions, egress paths, storage, or deployment assumptions
+
+If such a production obligation is introduced, identify the required production support.
+Do not limit the review to code quality.
+"""
+
+compliance_user_guidelines = """
+Assess whether app changes appear to require matching infra/platform changes.
+
+Look for missing:
+- worker deployment
+- queue/topic provisioning
+- secret or env var wiring
+- API gateway / ingress / route configuration
+- deployment configuration
+- egress/network policy
+- IAM/cloud permissions
+- observability or alerting for new production paths
+
+If production support is missing or not visible in this PR, call it out explicitly as a production-readiness gap.
+If evidence is unavailable, say what evidence should exist.
+"""
