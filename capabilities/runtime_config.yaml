@@ -16,7 +16,7 @@ approval:
 template_map:
   configmap_entry:
     template: templates/configmap_entry.tmpl
-    output: helm/payments-api/env/${env_name}.yaml
+    output: envs/prod/payments-api/configmaps/runtime-${env_name}.yaml
   helm_env_wiring:
-    template: templates/helm_env_wiring.tmpl
-    output: helm/payments-api/values.yaml
+    template: templates/helm_configmap_env_wiring.tmpl
+    output: helm/payments-api/env/runtime-${env_name}.yaml

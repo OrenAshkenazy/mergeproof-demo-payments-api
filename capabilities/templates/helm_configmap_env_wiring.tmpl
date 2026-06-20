@@ -1,0 +1,6 @@
+env:
+  ${env_name}:
+    valueFrom:
+      configMapKeyRef:
+        name: ${service}-runtime-${env_name}
+        key: ${env_name}
