@@ -3,6 +3,7 @@ inputs:
   env_name: required
   service: required
   scope: required
+  config_name: required
 generates:
   - configmap_entry
 checks:
