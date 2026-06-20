@@ -8,8 +8,20 @@ from __future__ import annotations
 
 import os
 
-CHARGEBACK_PROVIDER_URL = os.environ["CHARGEBACK_PROVIDER_URL"]
+def _get_chargeback_provider_url() -> str:
+    """Return the configured chargeback provider URL.
+
+    Do not read required env vars at import time; that turns a deployment
+    misconfiguration into an opaque KeyError during startup/import.
+    """
+
+    value = os.getenv("CHARGEBACK_PROVIDER_URL")
+    if not value:
+        raise RuntimeError(
+            "Missing required environment variable CHARGEBACK_PROVIDER_URL"
+        )
+    return value
 
 
 def open_chargeback(payment_id: str) -> dict[str, str]:
-    return {"payment_id": payment_id, "provider": CHARGEBACK_PROVIDER_URL}
+    return {"payment_id": payment_id, "provider": _get_chargeback_provider_url()}
