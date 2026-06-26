@@ -30,6 +30,20 @@ resource "kubernetes_deployment" "${worker_name}" {
           name    = "${worker_name}"
           image   = "${service}:latest"
           command = ["python", "-m", "app.workers.${worker_name}"]
+
+          # Runtime env from the service-level aggregate ConfigMap + ExternalSecret
+          # (managed by MergeProof's aggregate_env_wiring); names are static.
+          env_from {
+            config_map_ref {
+              name = "${service}-runtime-config"
+            }
+          }
+
+          env_from {
+            secret_ref {
+              name = "${service}-runtime-secrets"
+            }
+          }
         }
       }
     }

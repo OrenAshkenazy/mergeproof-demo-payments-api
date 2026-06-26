@@ -13,3 +13,11 @@ spec:
         - name: ${worker_name}
           image: ${service}:latest
           command: ["python", "-m", "app.workers.${worker_name}"]
+          # Runtime env is injected from the service-level aggregate ConfigMap +
+          # ExternalSecret (managed by MergeProof's aggregate_env_wiring). Names are
+          # static, so no per-variable coordination is needed.
+          envFrom:
+            - configMapRef:
+                name: ${service}-runtime-config
+            - secretRef:
+                name: ${service}-runtime-secrets
