@@ -121,7 +121,7 @@ pre.diff { background: #0a1322; border: 1px solid #1a2740; border-radius: 8px; p
   <section class="banner">
     <div class="status">HUMAN DECISION REQUIRED</div>
     <div class="reason">AI review loop completed and tests passed, but generated infrastructure provisioning is still pending review.</div>
-    <div class="strip-line">0 fixes · tests passed</div>
+    <div class="strip-line">0 fixes · tests passed · production risk detected</div>
     <div class="strip-line">PR: <a href="https://github.com/OrenAshkenazy/mergeproof-demo-payments-api/pull/19">https://github.com/OrenAshkenazy/mergeproof-demo-payments-api/pull/19</a></div>
   </section>
 
@@ -141,13 +141,13 @@ pre.diff { background: #0a1322; border: 1px solid #1a2740; border-radius: 8px; p
   <h2 class="section">Production risks</h2>
   <table>
     <thead><tr><th>Severity</th><th>Surface</th><th>Evidence</th></tr></thead>
-    <tbody><tr><td colspan="3">No production-facing surfaces were changed by this PR.</td></tr></tbody>
+    <tbody><tr><td><span class="sev sev-high">HIGH</span></td><td>Public API</td><td><code>app/api/chargebacks.py</code> PR touches API route/handler code in a public-facing service.<br><strong>Security team policy:</strong> Payment or financial APIs require OAuth plus mTLS, or HMAC request signing. Sources: <a href="https://www.rfc-editor.org/rfc/rfc8705.html">OAuth 2.0 mTLS (RFC 8705)</a> and <a href="https://www.rfc-editor.org/rfc/rfc9421.html">HTTP Message Signatures, including HMAC-SHA256 (RFC 9421)</a>.</td></tr></tbody>
   </table>
 
   <h2 class="section">Human decision required</h2>
   <div class="decision">
     <p>AI review loop completed and tests passed, but generated infrastructure provisioning is still pending review.</p>
-    
+    <div class="points">Review before merge:<ol><li>Confirm the public financial API meets the security team policy</li><li>Review API behavior, contract, and error handling</li></ol></div>
     <ol><li>Approve the production risk and merge</li><li>Ask AI to adjust the implementation</li><li>Split risky behavior into a follow-up PR</li></ol>
   </div>
 
